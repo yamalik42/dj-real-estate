@@ -1,0 +1,15 @@
+<!doctype html>
+{% comment %} {% load rest_framework %} {% endcomment %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Users</title>
+    </head>
+    <body>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
