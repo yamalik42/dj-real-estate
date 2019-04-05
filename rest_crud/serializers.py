@@ -8,6 +8,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True, required=False)
     seller = serializers.BooleanField(required=False)
     phone = serializers.CharField(required=False)
+    description = serializers.CharField(required=False)
 
     class Meta:
         model = Profile

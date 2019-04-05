@@ -6,11 +6,20 @@
         <title>Users</title>
     </head>
     <body>
-        <form action="api" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% render_form user_serial %}
-            {% render_form profile_serial %}
-            <input type="submit" value="Submit">
-        </form>
+        {% if not prof_data %}
+            <form action="api" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% render_form user_serial %}
+                {% render_form profile_serial %}
+                <input type="submit" value="Submit">
+            </form>
+        {% else %}
+            {% for key, value in prof_data.items %}
+                <p>{{key}}: {{ value }}</p>
+            {% endfor %}
+        {% endif %}
+            <form action="/logout/" method="GET">
+                <input type="submit" value="Logout">
+            </form>
     </body>
 </html>
