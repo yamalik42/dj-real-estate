@@ -17,9 +17,17 @@
             {% for key, value in prof_data.items %}
                 <p>{{key}}: {{ value }}</p>
             {% endfor %}
-        {% endif %}
-            <form action="/logout/" method="GET">
-                <input type="submit" value="Logout">
+            {% if prof_data.seller %}
+                <form action='/property/create/' method="GET">
+                    <input type="submit" value="Add Property">
+                </form>
+            {% endif %}
+            <form action='/property/' method="GET">
+                <input type="submit" value="List Properties">
             </form>
+        {% endif %}
+        <form action="/logout/" method="GET">
+            <input type="submit" value="Logout">
+        </form>
     </body>
 </html>

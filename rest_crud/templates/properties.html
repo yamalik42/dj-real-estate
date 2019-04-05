@@ -6,10 +6,14 @@
         <title>Users</title>
     </head>
     <body>
-        <form action="api" method="POST" enctype="multipart/form-data">
+        <form action="/property/create/" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ property_serial }}
-            {% render_form image_serial %}
+            {% for field in property_serial %}
+                {% if field.name != 'seller' %}
+                    {% render_field field style=style %}
+                {% endif %}
+            {% endfor %}
+            <input name="image" type="file" multiple><br>
             <input type="submit" value="Submit">
         </form>
     </body>

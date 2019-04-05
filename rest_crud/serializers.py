@@ -42,13 +42,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     seller = serializers.PrimaryKeyRelatedField(
+        required=False,
         many=False,
         queryset=User.objects.all()
     )
 
     class Meta:
         model = Property
-        exclude = ('listing_date',)
+        exclude = ('listing_date', 'id')
 
 
 class PropertyImageSerializer(serializers.ModelSerializer):
@@ -56,10 +57,11 @@ class PropertyImageSerializer(serializers.ModelSerializer):
         many=False,
         queryset=Property.objects.all()
     )
+    image = serializers.ImageField(use_url=True)
 
     class Meta:
         model = PropertyImage
-        fields = '__all__'
+        exclude = ('id',)
 
 
 class InquirySerializer(serializers.ModelSerializer):

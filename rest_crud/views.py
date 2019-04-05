@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 from django.contrib.auth.views import logout_then_login
+from django.contrib.auth import login
 
 
 class CreateEditUserView(APIView):
@@ -32,7 +33,6 @@ class CreateEditUserView(APIView):
                 }) 
 
     def post(self, request):
-        import pdb;pdb.set_trace()
         clean_dat = {k: v for k, v in request.data.items() if v != ""}
         usr = request.user
 
@@ -49,17 +49,18 @@ class CreateEditUserView(APIView):
 
             return redirect('/user/')
 
-        new_user = UserSerializer(data=nonblank_data)
-        new_profile = ProfileSerializer(data=nonblank_data)
+        new_user_serial = UserSerializer(data=clean_dat)
+        new_profile_serial = ProfileSerializer(data=clean_dat)
 
-        if not (new_user.is_valid() and new_profile.is_valid()):
+        if not (new_user_serial.is_valid() and new_profile_serial.is_valid()):
             return redirect('/user/')
 
-        new_user.save()
-        saved_user = User.objects.get(username=new_user.data['username'])
-        new_profile.save(user=saved_user)
+        new_user_serial.save()
+        new_user = User.objects.get(username=new_user_serial.data['username'])
+        new_profile_serial.save(user=new_user)
+        login(request, user=new_user)
 
-        return redirect('/admin/')
+        return redirect('/login/')
 
 
 class RetrieveUserView(LoginRequiredMixin, APIView):
@@ -68,15 +69,14 @@ class RetrieveUserView(LoginRequiredMixin, APIView):
     template_name = 'testuser.html'
 
     def get(self, request):
-        if not request.user.is_anonymous:
-            usr = request.user
-            profile = Profile.objects.get(pk=usr)
-            prof_json = ProfileSerializer(profile).data
-            prof_json['username'] = UserSerializer(usr).data['username']
-            
-            return Response({
-                'prof_data': prof_json
-            })
+        usr = request.user
+        profile = Profile.objects.get(pk=usr)
+        prof_json = ProfileSerializer(profile).data
+        prof_json['username'] = UserSerializer(usr).data['username']
+        
+        return Response({
+            'prof_data': prof_json
+        })
 
 
 class LogoutView(APIView):
@@ -84,22 +84,28 @@ class LogoutView(APIView):
         return logout_then_login(request, login_url='/login/')
 
 
-class CreateEditPropertyView(APIView):
+class CreateEditPropertyView(LoginRequiredMixin, APIView):
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'properties.html'
+    style = {}
 
     def get(self, request):
         # import pdb;pdb.set_trace()
-        if not request.user.is_anonymous:
-            profile = Profile.objects.get(pk=request.user)
-            request.user.password = ""
-
-            return Response({
-                    'user_serial': UserSerializer(request.user),
-                    'profile_serial': ProfileSerializer(profile)
-                })
-
         return Response({
                     'property_serial': PropertySerializer(),
-                    'image_serial': PropertyImageSerializer()
+                    'style': self.style
                 }) 
+
+    def post(self, request):
+        property_serial = PropertySerializer(data=request.data)
+        if property_serial.is_valid():
+            prop_pk = property_serial.save(seller=request.user).pk
+            pis = PropertyImageSerializer
+
+            img_list = dict(request.FILES)['image']
+            img_objs = [{'estate': prop_pk, 'image': img} for img in img_list]
+            img_serials = [pis(data=img_data) for img_data in img_objs]
+            for serial in img_serials:
+                if serial.is_valid():
+                    serial.save()
+            import pdb;pdb.set_trace()

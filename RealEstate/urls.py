@@ -24,7 +24,11 @@ urlpatterns = [
     path('user/', views.CreateEditUserView.as_view(), name='next'),
     path('user/info/', views.RetrieveUserView.as_view(), name='profile'),
     path('user/api', views.CreateEditUserView.as_view()),
-    path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    path(
+        'login/',
+        auth_views.LoginView.as_view(redirect_authenticated_user=True),
+        name='login'
+    ),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('property/', views.CreateEditPropertyView.as_view())
+    path('property/create/', views.CreateEditPropertyView.as_view())
 ]
