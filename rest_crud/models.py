@@ -62,4 +62,5 @@ class PropertyImage(models.Model):
 class Inquiry(models.Model):
     comment = models.TextField(max_length=442)
     estate = models.ForeignKey(Property, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(Property, on_delete=models.CASCADE)
     sent_date = models.DateField(auto_now_add=True)

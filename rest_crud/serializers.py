@@ -49,7 +49,7 @@ class PropertySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Property
-        exclude = ('listing_date', 'id')
+        exclude = ('listing_date',)
 
 
 class PropertyImageSerializer(serializers.ModelSerializer):

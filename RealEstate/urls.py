@@ -16,19 +16,26 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_crud import views
-from django.contrib.auth import views as auth_views
+from . import settings
+from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', views.CreateEditUserView.as_view(), name='next'),
-    path('user/info/', views.RetrieveUserView.as_view(), name='profile'),
+    path('user/info/', views.ListUserView.as_view(), name='profile'),
     path('user/api', views.CreateEditUserView.as_view()),
     path(
         'login/',
-        auth_views.LoginView.as_view(redirect_authenticated_user=True),
+        views.ExtendedLoginView.as_view(redirect_authenticated_user=True),
         name='login'
     ),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('property/create/', views.CreateEditPropertyView.as_view())
+    path('property/create/', views.CreatePropertyView.as_view()),
+    path('property/list/', views.ListPropertyView.as_view()),
+    path('property/edit/<int:order_by>/', views.EditPropertyView.as_view()),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

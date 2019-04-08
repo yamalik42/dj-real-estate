@@ -6,28 +6,48 @@
         <title>Users</title>
     </head>
     <body>
-        {% if not prof_data %}
+        {% if not prof_data and not users%}
             <form action="api" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% render_form user_serial %}
                 {% render_form profile_serial %}
                 <input type="submit" value="Submit">
             </form>
-        {% else %}
+        {% elif not users %}
             {% for key, value in prof_data.items %}
-                <p>{{key}}: {{ value }}</p>
+                {% if key != 'image' %}
+                    <p>{{key}}: {{value}}</p>
+                {% else %}
+                    <img src='{{value}}' height='42' width='42'>
+                {% endif %}
             {% endfor %}
+            <form action='/user/'>
+                <input type='submit' value='Edit Profile'>
+            </form>
             {% if prof_data.seller %}
+                {% for prop in prop_data %}
+                    <form mehtod="GET" action='/property/list' style='display: inline;'>
+                        <input type='submit' value='{{prop.title}}'>
+                        <input type="hidden" name="pk" value='{{prop.id}}' />
+                    </form>
+                {% endfor %}
                 <form action='/property/create/' method="GET">
                     <input type="submit" value="Add Property">
                 </form>
             {% endif %}
-            <form action='/property/' method="GET">
+            <form action='/property/list/' method="GET">
                 <input type="submit" value="List Properties">
             </form>
+            <form action="/logout/" method="GET">
+                <input type="submit" value="Logout">
+            </form>
+        {% else %}
+            {% for user in users %}
+                <form action='/user/info/'>
+                    <input type="submit" value='{{user.name}}'>
+                    <input type="hidden" name="user" value="{{user.id}}" />
+                </form>
+            {% endfor %}
         {% endif %}
-        <form action="/logout/" method="GET">
-            <input type="submit" value="Logout">
-        </form>
     </body>
 </html>
