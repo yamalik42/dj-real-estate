@@ -4,7 +4,7 @@ from rest_framework.views import APIView, Response
 from .models import Profile, Property, PropertyImage, Inquiry
 from django.contrib.auth.models import User
 from .serializers import (
-    UserSerializer, ProfileSerializer, InquirySerializer
+    UserSerializer, ProfileSerializer, InquirySerializer,
     PropertySerializer, PropertyImageSerializer
 )
 from rest_framework.renderers import TemplateHTMLRenderer
@@ -14,15 +14,31 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import logout_then_login, LoginView
 from django.contrib.auth import login
 from django.http import HttpResponseRedirect
+from rest_framework.permissions import BasePermission
+from django.core.mail import send_mail
 
 
-class ExtendedLoginView(LoginView):
-    def form_valid(self, form):
-        """Security check complete. Log the user in."""
-        login(self.request, form.get_user())
+class Creator(BasePermission):
+    def has_permission(self, request, view):
+        view_class = view.__class__.__name__
+        is_seller = Profile.objects.get(pk=request.user.id).seller
+        options = {1: is_seller, 0: not is_seller}
+        return options[view_class == 'CreateEditPropertyView']
+
+
+class ExtLogin(LoginView):
+    # def form_valid(self, form):
+    #     """Security check complete. Log the user in."""
+    #     login(self.request, form.get_user())
+    #     query = f'?user={self.request.user.id}'
+    #     url_with_query = f'{self.get_success_url()}{query}'
+    #     return HttpResponseRedirect(url_with_query)
+
+    def get_redirect_url(self):
+        """Return the user-originating redirect URL if it's safe."""
         query = f'?user={self.request.user.id}'
-        url_with_query = f'{self.get_success_url()}{query}'
-        return HttpResponseRedirect(url_with_query)
+        redirect_to = f'/user/info/{query}'
+        return redirect_to
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -97,10 +113,11 @@ class ListUserView(APIView):
 
             props = Property.objects.filter(seller=usr)
             prop_data = [{'title': p.title, 'id': p.id} for p in props]
-                
+            
             return Response({
                 'prof_data': prof_json,
-                'prop_data': prop_data
+                'prop_data': prop_data,
+                'is_self': request.user == usr
             })
         else:
             users = User.objects.all()
@@ -115,31 +132,49 @@ class LogoutView(APIView):
         return logout_then_login(request, login_url='/login/')
 
 
-class CreatePropertyView(LoginRequiredMixin, APIView):
+class CreateEditPropertyView(LoginRequiredMixin, APIView):
     login_url = '/login/'
     renderer_classes = (TemplateHTMLRenderer,)
     template_name = 'properties.html'
+    permission_classes = (Creator,)
+    style = {}
 
     def get(self, request):
+        import pdb;pdb.set_trace()
+        if len(request.query_params):
+            prop = Property.objects.get(pk=request.query_params['id'])
+            return Response({
+                'property_serial': PropertySerializer(prop),
+                'style': self.style,
+                'is_update': True,
+            })
         return Response({
                     'property_serial': PropertySerializer(),
                     'style': {},
-                    'read_only': False
                 }) 
 
     def post(self, request):
+        if len(request.query_params):
+            clean_data = {k: v for k, v in request.data.items() if v != ""}
+            prop = Property.objects.get(pk=request.query_params['id'])
+            serial = PropertySerializer(prop, data=clean_data, partial=True)
+            self.save_imgs(request.FILES, PropertyImageSerializer, prop.id)
+            import pdb;pdb.set_trace()
+
         property_serial = PropertySerializer(data=request.data)
         if property_serial.is_valid():
             prop_pk = property_serial.save(seller=request.user).pk
-            pis = PropertyImageSerializer
-
-            img_list = dict(request.FILES)['image']
-            img_objs = [{'estate': prop_pk, 'image': img} for img in img_list]
-            img_serials = [pis(data=img_data) for img_data in img_objs]
-            for serial in img_serials:
-                if serial.is_valid():
-                    serial.save()
+            self.save_imgs(request.FILES, PropertyImageSerializer, prop_pk)
             import pdb;pdb.set_trace()
+    
+    def save_imgs(self, images, serial, prop_pk):
+        img_list = dict(images)['image']
+        img_objs = [{'estate': prop_pk, 'image': img} for img in img_list]
+        img_serials = [serial(data=img_data) for img_data in img_objs]
+
+        for serial in img_serials:
+            if serial.is_valid():
+                serial.save()
 
 
 class ListPropertyView(APIView):
@@ -148,9 +183,14 @@ class ListPropertyView(APIView):
     style = {}
 
     def get(self, request):
-        props = Property.objects.all()
         params = {k: v for k, v in request.query_params.items()}
-        props = props.filter(**params)      
+        props = Property.objects.all().filter(**params)    
+
+        inquiries = dict()
+        is_owner = False
+        if len(props) == 1 and props[0].seller == request.user:
+            is_owner = True
+            inquiries = props[0].inquiry_set.all()
 
         prop_objs = list()
         for prop in props:
@@ -161,32 +201,76 @@ class ListPropertyView(APIView):
             prop_data = PropertySerializer(prop).data
             prop_data.update(to_update)
             prop_objs.append(prop_data)
-            import pdb;pdb.set_trace()
         return Response({
             'prop_objs': prop_objs,
+            'inquiries': inquiries,
             'style': {},
-            'read_only': True
+            'read_only': True,
+            'is_buyer': not request.user.profile.seller,
+            'is_owner': is_owner
         })
-        
 
-class EditPropertyView(LoginRequiredMixin, APIView):
+
+class ListInquiryView(LoginRequiredMixin, APIView):
     login_url = '/login/'
     renderer_classes = (TemplateHTMLRenderer,)
-    template_name = 'properties.html'
-    style = {}
-
-    def get(self, request, pk):
-        import pdb;pdb.set_trace()
-
-
-class ListCreateInquiryView(LoginRequiredMixin, APIView):
-    login_url = '/login/'
-    renderer_classes = (TemplateHTMLRenderer,)
-    template_name = 'properties.html'
+    template_name = 'inquiries.html'
     style = {}
 
     def get(self, request):
-        if len(request.query_params):
+        if not request.user.profile.seller:
+            inqs = request.user.inquiry_set.all()
             return Response({
-                'Inq_Serial'; InquirySerializer
+                'inquiries': inqs,
             })
+
+
+class CreateEditInquiryView(LoginRequiredMixin, APIView):
+    login_url = '/login/'
+    renderer_classes = (TemplateHTMLRenderer,)
+    template_name = 'inquiries.html'
+    style = {}
+    permission_classes = (Creator,)
+
+    def get(self, request):
+        if len(request.query_params):
+            if request.query_params.get('inq_id', False):
+                inq = Inquiry.objects.get(pk=request.query_params['inq_id'])
+                return Response({
+                    'Inq_Serial': InquirySerializer(inq),
+                    'style': self.style
+                })
+            return Response({
+                    'Inq_Serial': InquirySerializer(),
+                    'style': self.style
+                })
+
+    def post(self, request):
+        if request.query_params.get('prop_id', False):
+            prop = Property.objects.get(pk=request.query_params['prop_id'])
+            inq_data = {
+                'estate': prop.pk,
+                'buyer': request.user.id,
+                'comment': request.data['comment']
+            }
+            inquiry = InquirySerializer(data=inq_data)
+            if inquiry.is_valid():
+                buyer = request.user.profile
+                seller = prop.seller.profile
+                send_mail(
+                    f'New Inquiry',
+                    f'I have made an inquiry for {prop.title}.',
+                    'yamalik42@gmail.com',
+                    ['yash.malik@tothenew.com'],
+                    fail_silently=False,
+                )
+                inquiry.save()
+            return redirect('/property/list/')
+
+        inq = Inquiry.objects.get(pk=request.query_params['inq_id'])
+        data = {'comment': request.data['comment']}
+        inq_serial = InquirySerializer(inq, data=data, partial=True)
+        import pdb;pdb.set_trace()
+        if inq_serial.is_valid():
+            inq_serial.save()
+        return redirect('/inquiry/api/list/') 

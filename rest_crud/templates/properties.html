@@ -7,10 +7,10 @@
     </head>
     <body>
         {% if not read_only %}
-            <form action="/property/create/" method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% for field in property_serial %}
-                    {% if field.name != 'seller' %}
+                    {% if field.name != 'seller' and field.name != 'id' %}
                         {% render_field field style=style %}
                     {% endif %}
                 {% endfor %}
@@ -28,10 +28,25 @@
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
-                <form action='/inquiry/create/' method='GET'>
-                    <input type="submit" value="Enquire">
-                    <input type='hidden' name='pk' value='{{obj.id}}'>
-                </form>
+                {% if is_buyer %}
+                    <form action='/inquiry/api/' method='GET'>
+                        <input type="submit" value="Enquire">
+                        <input type='hidden' name='prop_id' value='{{obj.id}}'>
+                    </form>
+                {% endif %}
+                {% if is_owner %}
+                    <form action='/property/api/' method='GET'>
+                        <input type="submit" value='Update Property'>
+                        <input type="hidden" name='id' value='{{obj.id}}'>
+                    </form>
+                    <h3>INQUIRIES:</h3>
+                    {% for inquiry in inquiries %}
+                        <p>From: {{inquiry.buyer}}</p>
+                        <p>Comment: {{inquiry.comment}}</p>
+                        <p>Sent On {{inquiry.sent_date}}</p>
+                    {% endfor %}
+                {% endif %}
+                
             {% endfor %}
         {% endif %}
 

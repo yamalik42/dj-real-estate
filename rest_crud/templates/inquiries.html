@@ -1,0 +1,27 @@
+<!doctype html>
+{% load rest_framework %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Inquire</title>
+    </head>
+    <body>
+        {% if inquiries %}
+            {% for inq in inquiries %}
+                <p>Property: {{inq.estate.title}}</p>
+                <p>Comment: {{inq.comment}}</p>
+                <p>Post Date: {{inq.sent_date}}</p>
+                <form action='/inquiry/api/' method='GET'>
+                    <input type='submit' value='Update Inquiry'>
+                    <input type='hidden' name='inq_id' value='{{inq.id}}'>
+                </form>
+            {% endfor %}
+        {% else %}
+            <form method='POST'>
+                {% csrf_token %}
+                {% render_field Inq_Serial.comment style=style%}
+                <input type='submit' value='Submit'>
+            </form>
+        {% endif %}
+    </body>
+</html>

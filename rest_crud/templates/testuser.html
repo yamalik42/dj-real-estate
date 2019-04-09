@@ -34,12 +34,13 @@
                 <form action='/property/create/' method="GET">
                     <input type="submit" value="Add Property">
                 </form>
+            {% else %}
+                <form action='/inquiry/api/list/' method='GET'>
+                    <input type="submit" value="Inquiries">
+                </form>
             {% endif %}
             <form action='/property/list/' method="GET">
                 <input type="submit" value="List Properties">
-            </form>
-            <form action="/logout/" method="GET">
-                <input type="submit" value="Logout">
             </form>
         {% else %}
             {% for user in users %}
@@ -49,5 +50,8 @@
                 </form>
             {% endfor %}
         {% endif %}
+        <form action="/logout/" method="GET">
+            <input type="submit" value="Logout">
+        </form>
     </body>
 </html>

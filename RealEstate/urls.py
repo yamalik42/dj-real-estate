@@ -20,21 +20,22 @@ from . import settings
 from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
+login_kwargs = {
+    'redirect_authenticated_user': True,
+    'template_name': 'base.html'
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', views.CreateEditUserView.as_view(), name='next'),
     path('user/info/', views.ListUserView.as_view(), name='profile'),
     path('user/api', views.CreateEditUserView.as_view()),
-    path(
-        'login/',
-        views.ExtendedLoginView.as_view(redirect_authenticated_user=True),
-        name='login'
-    ),
+    path('login/', views.ExtLogin.as_view(**login_kwargs), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('property/create/', views.CreatePropertyView.as_view()),
     path('property/list/', views.ListPropertyView.as_view()),
-    path('property/edit/<int:order_by>/', views.EditPropertyView.as_view()),
+    path('property/api/', views.CreateEditPropertyView.as_view()),
+    path('inquiry/api/', views.CreateEditInquiryView.as_view()),
+    path('inquiry/api/list/', views.ListInquiryView.as_view()),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

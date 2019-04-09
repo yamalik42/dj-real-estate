@@ -1,0 +1,86 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>TO THE NEW</title>
+        <link rel="stylesheet" href="{% static '/all.css' %}">
+    </head>
+    <body>
+        <div id='header-container'>
+            <div id="header-left-content">
+                <h1 id="ttn-header">real estates</h1>
+            </div>
+            <div id="header-right-content">
+                <div id="home-link-container">
+                    <h3 class='header-link'>Home</h3>
+                </div>
+                <div id="help-link-container">
+                    <h3 class='header-link'>Quick Help</h3>
+                </div>
+            </div>
+        </div>
+        <div id="form-container">
+                <div id='form-header-container'>
+                    <div id="header-title">
+                        Bug Report
+                    </div>
+                </div>
+                <div id='form-inputs-container'>
+                    <form>
+                        <h3 class='input-label'>Title:*</h3>
+                        <input type="text" id='title-input'>
+                        <h3 class="input-label">Description:*</h3>
+                        <textarea id="description-input" name="description" cols="46" rows="4"></textarea>
+                        <h3 class="input-label">Operating System:*</h3>
+                        <select class="select-input">
+                            <option value="winxp">Windows XP</option>
+                            <option value="win8">Windows 8</option>
+                            <option value="win10">Windows 10</option>
+                            <option value="mac">Mac</option>
+                            <option value="linux">Linux</option>
+                        </select>
+                        <h3 class="input-label">Product:*</h3>
+                        <select class="select-input">
+                            <option value='formoid'>Formoid</option>
+                            <option value='someprod'>Some Product</option>
+                            <option value='someprod'>Some Product</option>
+                            <option value='someprod'>Some Product</option>
+                            <option value='someprod'>Some Product</option>
+                            <option value='someprod'>Some Product</option>
+                            <option value='someprod'>Some Product</option>
+                        </select>
+                        <h3 class="input-label">Version:*</h3>
+                        <input type="text" id='version-input'>
+                        <h3 class="input-label">License:</h3>
+                        <div class='radio-container'>
+                            <span class='radio-visible' id='left-radio'></span>
+                            <label class='radio-label' id='left-label'>Free
+                                <input type="radio" value="free">
+                            </label>
+                        </div>
+                        <div class='radio-container' id='right-radio-container'>
+                            <span class='radio-visible' id='right-radio'></span>
+                            <label class='radio-label' id='right-label'>Business
+                                <input type="radio" value="business">
+                            </label>
+                        </div>
+                        <h3 class="input-label">Severity:</h3>
+                        <select class='select-input'>
+                            <option value='critical'>Critical</option>
+                            <option value='moderate'>Moderate</option>
+                            <option value='benign'>Benign</option>
+                        </select>
+                        <h3 class="input-label">Attachments:</h3>
+                        <input type='text' id='file-input'>
+                        <div id='file-input-button'>
+                            Choose File
+                        </div>
+                        <div id='submit-container'>
+                            <div id='submit-button'>Submit</div>
+                        </div>
+                    </form>
+                </div>
+        </div>
+    </body>
+</html>

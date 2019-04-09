@@ -9,11 +9,6 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="LOGIN">
-        {% if next %}
-            <input type="hidden" name="next" value={{ next }} />
-        {% else %}
-            <input type="hidden" name="next" value='/user/info/' />
-        {% endif %}
         </form>
         <form action="/user/" method="GET">
             <input type="submit" value="SIGN UP">
