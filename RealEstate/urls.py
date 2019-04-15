@@ -21,16 +21,16 @@ from django.contrib.staticfiles.urls import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 login_kwargs = {
-    'redirect_authenticated_user': True,
-    'template_name': 'base.html'
+    'template_name': 'index.html'
 }
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('',  views.ExtLogin.as_view(**login_kwargs)),
+    path('login/',  views.ExtLogin.as_view(**login_kwargs), name='login'),
     path('user/', views.CreateEditUserView.as_view(), name='next'),
     path('user/info/', views.ListUserView.as_view(), name='profile'),
-    path('user/api', views.CreateEditUserView.as_view()),
-    path('login/', views.ExtLogin.as_view(**login_kwargs), name='login'),
+    path('user/api/', views.CreateEditUserView.as_view()),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('property/list/', views.ListPropertyView.as_view()),
     path('property/api/', views.CreateEditPropertyView.as_view()),

@@ -1,0 +1,642 @@
+<!--
+	Author: W3layouts
+	Author URL: http://w3layouts.com
+	License: Creative Commons Attribution 3.0 Unported
+	License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+
+<!DOCTYPE html>
+<html lang="zxx">
+{% load static %}
+{% load rest_framework %}
+<head>
+	<title>InstaEstate</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<link href="{% static '/css/bootstrap.css' %}" rel='stylesheet' type='text/css' />
+	<link href="{% static '/css/login_overlay.css' %}" rel='stylesheet' type='text/css' />
+	<link href="{% static '/css/style6.css' %}" rel='stylesheet' type='text/css' />
+	<link rel="stylesheet" href="{% static '/css/shop.css' %}" type="text/css" />
+	<link rel="stylesheet" href="{% static '/css/owl.carousel.css' %}" type="text/css" media="all">
+	<link rel="stylesheet" href="{% static '/css/owl.theme.css' %}" type="text/css" media="all">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui1.css' %}">
+	<link href="{% static 'css/easy-responsive-tabs.css' %}" rel='stylesheet' type='text/css' />
+	<link rel="stylesheet" href="{% static 'css/flexslider.css' %}" type="text/css" media="screen" />
+	<link href="{% static '/css/style.css' %}" rel='stylesheet' type='text/css' />
+	<link href="{% static '/css/fontawesome-all.css' %}" rel="stylesheet">
+	<link href="//fonts.googleapis.com/css?family=Inconsolata:400,700" rel="stylesheet">
+	<link href="//fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800"
+	    rel="stylesheet">
+	<style>
+		.prop-detial {
+			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+			border-collapse: collapse;
+		}
+
+		.prop-detail td, .prop-detail th {
+			border: 1px solid #ddd;
+			padding: 8px;
+		}
+
+		.prop-detail tr:nth-child(even){background-color: #f2f2f2;}
+
+		.prop-detail tr:hover {background-color: #ddd;}
+
+		.prop-detail th {
+			padding-top: 12px;
+			padding-bottom: 12px;
+			text-align: left;
+			background-color: #474748;
+			color: white;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="banner-top container-fluid" id="home">
+		<!-- header -->
+		<header>
+			<div class="row">
+				<div class="col-md-3 top-info text-left mt-lg-4">
+					<h6>Need Help</h6>
+					<ul>
+						<li>
+							<i class="fas fa-phone"></i> Call</li>
+						<li class="number-phone mt-3">12345678099</li>
+					</ul>
+				</div>
+				<div class="col-md-6 logo-w3layouts text-center">
+					<h1 class="logo-w3layouts">
+						<a class="navbar-brand" href="index.html">
+							Insta Estate </a>
+					</h1>
+				</div>
+
+				<div class="col-md-3 top-info-cart text-right mt-lg-4">
+				{% if get_login or is_anonymous%}
+					<ul class="cart-inner-info">
+						<li class="button-log" id='get-login'>
+							<a class="btn-open" href="#">
+								<button class="top_googles_cart" type="submit" name="submit" value="">
+									Login
+								</button>
+							</a>
+						</li>
+						<li class="button-log" id='get-signup'>
+							<a class="btn-open" href="#">
+								<button class="top_googles_cart" type="submit" name="submit" value="">
+									SignUp
+								</button>
+							</a>
+						</li>
+					</ul>
+				{% else %}
+					<form action='/logout/' method='GET'>
+						<button class="top_googles_cart" type="submit" name="submit" value="">
+							Logout
+						</button>
+					</form>
+				{% endif %}
+				{% if get_login or is_anonymous%}
+					<!---->
+					<div class="overlay-login text-left" id="login-tab">
+						<button type="button" class="overlay-close1" id="login-close">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+						<div class="wrap">
+							<h5 class="text-center mb-4">Login Now</h5>
+							<div class="login p-5 bg-dark mx-auto mw-100">
+								<form action='/login/' method="post">
+									{% csrf_token %}
+									<div class="form-group">
+										<label class="mb-2">Username</label>
+										<input type="text" name="username" class="form-control" id="exampleInputEmail1" placeholder="" required>
+									</div>
+									<div class="form-group">
+										<label class="mb-2">Password</label>
+										<input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="" required>
+									</div>
+									<button type="submit" class="btn btn-primary submit mb-4">Sign In</button>
+									<input type="hidden" name="next" value='/user/info/'>
+								</form>
+							</div>
+							<!---->
+						</div>
+					</div>
+
+					<div class="overlay-login text-left" id="signup-tab">
+						<button type="button" class="overlay-close1" id="signup-close">
+							<i class="fa fa-times" aria-hidden="true"></i>
+						</button>
+						<div class="wrap">
+							<h5 class="text-center mb-4">Sign Up Now</h5>
+							<div class="login p-5 bg-dark mx-auto mw-100">
+								<form action='/user/' method="post" id="signup-form" enctype="multipart/form-data">
+									{% csrf_token %}
+									{% render_form user_serial %}
+									{% render_form prof_serial %}
+									<button type="submit" class="btn btn-primary submit mb-4">Sign Up</button>
+								</form>
+							</div>
+							<!---->
+						</div>
+					</div>
+				{% endif %}
+					<!---->
+				
+				</div>
+			</div>
+			<div class="search">
+				<div class="mobile-nav-button">
+					<button id="trigger-overlay" type="button">
+						<i class="fas fa-search"></i>
+					</button>
+				</div>
+				<!-- open/close -->
+				<div class="overlay overlay-door">
+					<button type="button" class="overlay-close">
+						<i class="fa fa-times" aria-hidden="true"></i>
+					</button>
+					<form action="#" method="post" class="d-flex">
+						<input class="form-control" type="search" placeholder="Search here..." required="">
+						<button type="submit" class="btn btn-primary submit">
+							<i class="fas fa-search"></i>
+						</button>
+					</form>
+
+				</div>
+				<!-- open/close -->
+			</div>
+			<label class="top-log mx-auto"></label>
+			<nav class="navbar navbar-expand-lg navbar-light bg-light top-header mb-2">
+
+				<button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+				    aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon">
+						
+					</span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav nav-mega mx-auto">
+						<li class="nav-item">
+							<a class="nav-link ml-lg-0" href="/">HOME</a>
+						</li>
+						<li class="nav-item">
+						{% if usr_id %}
+							<a class="nav-link" href="/user/info/?pk={{usr_id}}">PROFILE</a>
+						{% else %}
+							<a class="nav-link">PROFILE</a>
+						{% endif %}
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="contact.html">PROPERTIES</a>
+						</li>
+					</ul>
+
+				</div>
+			</nav>
+		</header>
+		<!-- //header -->
+	</div>
+	<!--//banner-sec-->
+	{% if is_property %}
+		{% load rest_crud_tags %}
+		<div id='img-container' style='margin:auto;'>
+		{% for img in prop_objs.0.images %}
+			<img src="{{img.image.url}}" height='256' width='0' style='position:absolute; z-index=0; top: 442px; left: 84px;  margin-left: auto; margin-right: auto; margin-bottom: 42px;'>
+		{% endfor %}
+		</div>
+		<table class="prop-detail" style='text-align: center; margin-left: 84px; margin-right: 84px;'>
+			<tr>
+				<th style="text-align: center;">ID:</th>
+				<td>{{prop_objs.0.id}}</td>
+				<th style="text-align: center;">Listing Date</th>
+				<td>{{prop_objs.0.date}}</td>
+				<th style="text-align: center;">Seller Username</th>
+				<td>{{prop_objs.0.seller}}</td>
+				<th style="text-align: center;">Price</th>
+				<td>{{prop_objs.0.price}}</td>		
+				<th style="text-align: center;">Title</th>
+				<td>{{prop_objs.0.title}}</td>
+			</tr>
+			<tr>
+				<th style="text-align: center;">Address</th>
+				<td>{{prop_objs.0.address}}</td>
+				<th style="text-align: center;">City</th>
+				<td>{{prop_objs.0.city}}</td>
+				<th style="text-align: center;">State</th>
+				<td>{{prop_objs.0.state}}</td>
+				<th style="text-align: center;">Zip Code</th>
+				<td>{{prop_objs.0.zip_code}}</td>
+				<th style="text-align: center;">Description</th>
+				<td>{{prop_objs.0.description}}</td>
+			</tr>
+			<tr>
+				<th style="text-align: center;">Bedroom</th>
+				<td>{{prop_objs.0.bedroom}}</td>
+				<th style="text-align: center;">Bathroom</th>
+				<td>{{prop_objs.0.bathroom}}</td>
+				<th style="text-align: center;">Garage</th>
+				<td>{{prop_objs.0.garage}}</td>
+				<th style="text-align: center;">Square Feet</th>
+				<td>{{prop_objs.0.square_feet}}</td>
+				<th style="text-align: center;">Lot Size</th>
+				<td>{{prop_objs.0.lot_size}}</td>
+			</tr>
+		</table>
+		
+		{% if is_owner %}
+			<form action='/property/api/' method='GET'>
+				<input type="submit" value='Update Property'>
+				<input type="hidden" name='id' value='{{obj.id}}'>
+			</form>
+			<h3>INQUIRIES:</h3>
+			{% for inquiry in inquiries %}
+				<p>From: {{inquiry.buyer}}</p>
+				<p>Comment: {{inquiry.comment}}</p>
+				<p>Sent On {{inquiry.sent_date}}</p>
+			{% endfor %}
+		{% endif %}   
+		 
+		<section class="banner-bottom-wthreelayouts py-lg-5 py-3">
+			<div class="container" style='width: 642px; float: right; margin-right: 84px; margin-top: -54px;'>
+				{% if is_buyer and not buyer_and_inqd %}   
+				<div class="add-review">
+					<h4>MAKE AN INQUIRY</h4>
+					<form action="/inquiry/api/" method="post" style='margin-top: -12px;'>
+						{% csrf_token %}
+						<textarea name="comment" required=""></textarea>
+						<input name="estate" value="{{prop_objs.0.id}}" style="display: none;">
+						<input name="new_inq" value="True" style="display: none;">
+						<input type="submit" value="SEND">
+					</form>
+				</div>
+				{% elif is_buyer %}
+					<h1 style='margin-top: 112px;'>You have already inquired upon this property.</h1>
+				{% else %}
+					<h1 style='margin-top: 112px;'>You must be logged on as a buyer to inquire.</h1>
+				{% endif %}
+			</div>		
+		</section>
+	{% elif read_only_single_user %}
+		<div id='prof-detail-container'>
+			<div style='float: right; margin-right: 242px; width: 462px;'>
+				<h3>Username: {{prof_data.username}}</h3><br>
+				<h3>First Name: {{prof_data.first_name}}</h3><br>
+				<h3>Last Name: {{prof_data.last_name}}</h3><br>
+				<h3>Account Type: {{prof_data.account}}</h3><br>
+				<h3>Email: {{prof_data.email}}</h3><br>
+				<h3>Phone: {{prof_data.phone}}</h3><br>
+			</div>
+			<img style='margin-left: 242px' src='{{prof_data.image}}' height='324' width='296'>
+		
+		<button id='update-prof-button' style='margin: auto; display: block; margin-top: 42px;'>UPDATE PROFILE</button>
+		</div>
+		{% if is_self %}
+		<div id='prof-update-container' style='display: none;'>
+			<form action='/user/api/' method='post' style=' margin-left: 442px; margin-right: 442px;'>
+				<p>*** BLANK FIELDS WILL RETAIN OLD VALUES ***</p>
+				{% csrf_token %}
+				{% render_form user_serial %}
+				{% render_form prof_serial %}
+				<input type="submit" value="SUBMIT UPDATE">
+			</form>
+		</div>
+		{% endif %}
+	{% else %}
+		<section class="banner-bottom-wthreelayouts py-lg-5 py-3" style="padding-top: 0px !important">
+			<div class="container-fluid">
+				<div class="inner-sec-shop px-lg-4 px-3">
+					<h3 class="tittle-w3layouts my-lg-4 my-4" style="text-align: center;">New Properties for you </h3>
+					<div class="row" style='flex-direction: row; align-items: center; justify-content: center;'>
+						<!-- /womens -->
+						<div pk='{{top_featured.0.id}}' class="featured-prop col-md-3 product-men women_two" >
+							<div class="product-googles-info googles">
+								<div class="men-pro-item">
+									<img src="{{images.0}}" class="img-fluid" alt="">
+									<span class="product-new-top">New</span>
+					
+									<div class="item-info-product">
+										<div class="info-product-price">
+											<div class="grid_meta">
+												<div class="product_price">
+													<h4>
+														{{top_featured.0.title}}
+													</h4>
+													<div class="grid-price mt-2">
+														<span class="money ">${{top_featured.0.price}}</span>
+													</div>
+												</div>
+												
+											</div>
+									
+										</div>
+										<div class="clearfix"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div pk='{{top_featured.1.id}}' class="featured-prop col-md-3 product-men women_two">
+							<div class="product-googles-info googles">
+								<div class="men-pro-item">
+									<img src="{{images.1}}" class="img-fluid" alt="">
+									<span class="product-new-top">New</span>
+					
+									<div class="item-info-product">
+										<div class="info-product-price">
+											<div class="grid_meta">
+												<div class="product_price">
+													<h4>
+														{{top_featured.1.title}}
+													</h4>
+													<div class="grid-price mt-2">
+														<span class="money ">${{top_featured.1.price}}</span>
+													</div>
+												</div>
+												
+											</div>
+									
+										</div>
+										<div class="clearfix"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div pk='{{top_featured.2.id}}' class="featured-prop col-md-3 product-men women_two">
+					
+							<div class="product-googles-info googles">
+								<div class="men-pro-item">
+									<img src="{{images.2}}" class="img-fluid" alt="">
+									<span class="product-new-top">New</span>
+					
+									<div class="item-info-product">
+										<div class="info-product-price">
+											<div class="grid_meta">
+												<div class="product_price">
+													<h4>
+														{{top_featured.2.title}}
+													</h4>
+													<div class="grid-price mt-2">
+														<span class="money ">${{top_featured.2.price}}</span>
+													</div>
+												</div>
+												
+											</div>
+									
+										</div>
+										<div class="clearfix"></div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						
+						
+					</div>
+					<!-- //womens -->
+				</div>
+			</div>
+		</section>
+	{% endif %}
+	<!-- about -->
+	<!--footer -->
+	{% comment %} <footer class="py-lg-5 py-3" style="padding-top: 0px !important;">
+		<div class="container-fluid px-lg-5 px-3">
+			<div class="copyright-w3layouts mt-4">
+				<p class="copy-right text-center ">&copy; 2019 InstaEstate. All Rights Reserved | Design by
+					<a href="http://w3layouts.com/"> W3layouts </a>
+				</p>
+			</div>
+		</div>
+	</footer>
+	<!-- //footer --> {% endcomment %}
+
+	<!--jQuery-->
+	<script src="{% static '/js/jquery-2.2.3.min.js' %}"></script>
+	
+	<!--search jQuery-->
+	<script src="{% static '/js/modernizr-2.6.2.min.js' %}"></script>
+	<script src="{% static '/js/classie-search.js' %}"></script>
+	<script src="{% static '/js/demo1-search.js' %}"></script>
+	<!--//search jQuery-->
+	<!-- cart-js -->
+	<script src="{% static '/js/minicart.js' %}"></script>
+	<script>
+		$('.featured-prop').hover(function() {
+			$(this).css('cursor','pointer');
+		});
+
+		$( ".featured-prop" ).click(function() {
+			window.location.href = window.location.href + 'property/list/?pk=' + this.getAttribute('pk')
+		});
+		{% if get_login or is_anonymous%}
+		document.querySelectorAll("#signup-form input")[2].type = "password"
+		var inp = document.querySelectorAll("#signup-form input")[3];
+		inp.style.width = '124px'
+		inp.style.color = '#363C42'
+		var newImg = document.createElement( 'img' )
+		newImg.id = 'blah'
+		newImg.height = '84'
+		newImg.width = '84'
+		newImg.style.backgroundColor = 'white'
+		inp.parentNode.insertBefore( newImg, inp.nextSibling );
+
+		function readURL(input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+
+				reader.onload = function(e) {
+				$('#blah').attr('src', e.target.result);
+				}
+
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+
+		$(inp).change(function() {
+			readURL(this);
+		});
+		{% endif %}
+		{% if is_property %}
+		$('#img-container').children().last().css('width', '442px')
+		imgArr = Array()
+		imgEls = $('#img-container').children()
+		for (let i=0; i<imgEls.length; i++) {
+			if (typeof(imgEls[i]) === 'object') {
+				imgArr.push(imgEls[i])
+			}
+		}
+		if (imgArr.length > 1) {
+			function initSlides(slide = $('#img-container img:first-child')) {
+				let len = imgArr.length
+				slideIndex = imgArr.indexOf(slide[0])
+
+				prevIndex = '(' + ((slideIndex+len-1) % len).toString() + ')'
+				prevSlide = $('#img-container img:eq'+prevIndex)
+
+				nextIndex = '(' + ((slideIndex+len+1) % len).toString() + ')'
+				nextSlide = $('#img-container img:eq'+nextIndex)
+
+				slide.css('z-index', '1')
+				prevSlide.css('z-index', '0')
+				slide.animate({
+					width: '442px'
+				}, 4200, () => {
+					setTimeout(() => {
+						prevSlide.css('width', '0px')
+						initSlides(nextSlide)
+					}, 1000)
+				})
+			}
+    		initSlides()
+		}
+		{% endif %}
+
+		$('#update-prof-button').click(function() {
+			$('#prof-detail-container').css('display', 'none')
+			$('#prof-update-container').css('display', 'block')
+			inps = $('#prof-update-container :input')
+			for (let i=0; i < inps.length; i++) {
+				if (!['submit', 'hidden', 'checkbox', 'file'].includes(inps[i].type)) {
+					console.log(inps[i].type)
+					inps[i].placeholder = inps[i].value
+					inps[i].value = ''
+				}
+				if (inps[i].type === 'checkbox') {
+					$(inps[i]).parent().css('display', 'none')
+				}
+			}	
+		})
+		googles.render();
+
+		googles.cart.on('googles_checkout', function (evt) {
+			var items, len, i;
+
+			if (this.subtotal() > 0) {
+				items = this.items();
+
+				for (i = 0, len = items.length; i < len; i++) {}
+			}
+		});
+	</script>
+	<!-- //cart-js -->
+	
+	<script>
+		$(document).ready(function () {
+			$("#get-login").click(function () {
+				$("#login-tab").fadeToggle(200);
+				$(this).toggleClass('btn-open').toggleClass('btn-close');
+			});
+			$("#get-signup").click(function () {
+				$("#signup-tab").fadeToggle(200);
+				$(this).toggleClass('btn-open').toggleClass('btn-close');
+			});
+		});
+		$('#login-close').on('click', function () {
+			$("#login-tab").fadeToggle(200);
+			$("#get-login").toggleClass('btn-open').toggleClass('btn-close');
+			open = false;
+		});
+		$("#signup-close").on('click', function () {
+			$("#signup-tab").fadeToggle(200);
+			$("#get-login").toggleClass('btn-open').toggleClass('btn-close');
+			open = false;
+		});
+	</script>
+	<!-- carousel -->
+	<script src="{% static '/js/owl.carousel.js' %}"></script>
+	<script>
+		$(document).ready(function () {
+			$('.owl-carousel').owlCarousel({
+				loop: true,
+				margin: 10,
+				responsiveClass: true,
+				responsive: {
+					0: {
+						items: 1,
+						nav: true
+					},
+					600: {
+						items: 2,
+						nav: false
+					},
+					900: {
+						items: 3,
+						nav: false
+					},
+					1000: {
+						items: 4,
+						nav: true,
+						loop: false,
+						margin: 20
+					}
+				}
+			})
+		})
+	</script>
+
+	<!-- //end-smooth-scrolling -->
+
+
+	<!-- dropdown nav -->
+	<script>
+		$(document).ready(function () {
+			$(".dropdown").hover(
+				function () {
+					$('.dropdown-menu', this).stop(true, true).slideDown("fast");
+					$(this).toggleClass('open');
+				},
+				function () {
+					$('.dropdown-menu', this).stop(true, true).slideUp("fast");
+					$(this).toggleClass('open');
+				}
+			);
+		});
+	</script>
+	<!-- //dropdown nav -->
+  <script src="{% static '/js/move-top.js' %}"></script>
+    <script src="{% static '/js/easing.js' %}"></script>
+    <script>
+        jQuery(document).ready(function($) {
+            $(".scroll").click(function(event) {
+                event.preventDefault();
+                $('html,body').animate({
+                    scrollTop: $(this.hash).offset().top
+                }, 900);
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            /*
+            						var defaults = {
+            							  containerID: 'toTop', // fading element id
+            							containerHoverID: 'toTopHover', // fading element hover id
+            							scrollSpeed: 1200,
+            							easingType: 'linear' 
+            						 };
+            						*/
+
+            $().UItoTop({
+                easingType: 'easeOutQuart'
+            });
+
+        });
+		$('.enquire-border').css('background-color', 'lightgrey')
+    </script>
+    <!--// end-smoth-scrolling -->
+
+	<script src="{% static '/js/bootstrap.js' %}"></script>
+	<!-- js file -->
+</body>
+
+</html>

@@ -4,5 +4,5 @@ register = template.Library()
 
 
 @register.filter
-def get_obj_attr(obj, attr):
-    return obj.get(attr)
+def table_title(title):
+    return title.replace('_', ' ').upper()

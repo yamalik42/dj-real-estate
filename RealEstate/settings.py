@@ -29,8 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_REDIRECT_URL = '/user/info/'
-
 SENDGRID_API_KEY = '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'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
